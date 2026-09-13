@@ -1,0 +1,13 @@
+product_id,product_name,generic_name,product_type,therapeutic_area,launch_date,average_price_per_rx
+PRD-001,Lipitor,atorvastatin,Brand,Cardiovascular,1997-01-01,200.0
+PRD-002,Crestor,rosuvastatin,Brand,Cardiovascular,2003-08-12,220.0
+PRD-003,Norvasc,amlodipine,Brand,Cardiovascular,1992-07-31,150.0
+PRD-004,Plavix,clopidogrel,Brand,Cardiovascular,1997-11-17,180.0
+PRD-005,Eliquis,apixaban,Brand,Cardiovascular,2012-12-28,450.0
+PRD-006,Entresto,sacubitril/valsartan,Brand,Cardiovascular,2015-07-07,550.0
+PRD-007,atorvastatin,atorvastatin,Generic,Cardiovascular,2011-11-30,15.0
+PRD-008,rosuvastatin,rosuvastatin,Generic,Cardiovascular,2016-04-29,20.0
+PRD-009,amlodipine,amlodipine,Generic,Cardiovascular,2007-03-23,10.0
+PRD-010,lisinopril,lisinopril,Generic,Cardiovascular,2002-07-01,8.0
+PRD-011,metoprolol,metoprolol,Generic,Cardiovascular,2006-07-31,12.0
+PRD-012,losartan,losartan,Generic,Cardiovascular,2010-04-06,14.0

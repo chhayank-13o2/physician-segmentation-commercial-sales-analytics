@@ -1,0 +1,8 @@
+pandas
+numpy
+faker
+openpyxl
+matplotlib
+seaborn
+sqlalchemy
+psycopg2-binary

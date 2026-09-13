@@ -1,0 +1,41 @@
+territory_id,total_trx,total_nrx,physician_count,avg_trx_per_physician,yoy_growth_rate,brand_share_pct,top_specialty,priority_a_count,priority_b_count,market_share,region,territory_name,rank
+T-019,30763.0,6983.0,65,473.3,4.27,32.11,Internal Medicine,21,14,13.08,Midwest,Territory 19,1
+T-013,20004.0,4498.0,64,312.6,25.76,29.15,Endocrinology,15,17,8.51,Northeast,Territory 13,2
+T-020,14799.0,3310.0,55,269.1,29.05,29.62,Internal Medicine,10,14,6.29,Midwest,Territory 20,3
+T-034,12772.0,2753.0,63,202.7,6.71,27.21,Cardiology,18,8,5.43,Southeast,Territory 34,4
+T-029,10891.0,2488.0,55,198.0,9.51,31.47,Family Practice,20,11,4.63,West,Territory 29,5
+T-032,9195.0,2056.0,63,146.0,31.86,29.26,Cardiology,15,17,3.91,West,Territory 32,6
+T-002,8640.0,1991.0,67,129.0,22.0,28.24,Family Practice,13,18,3.67,Northeast,Territory 2,7
+T-008,8628.0,2017.0,57,151.4,12.92,26.63,Internal Medicine,14,12,3.67,West,Territory 8,8
+T-021,6304.0,1479.0,56,112.6,30.92,28.55,Family Practice,8,16,2.68,Northeast,Territory 21,9
+T-007,6115.0,1369.0,52,117.6,16.1,27.79,Internal Medicine,10,11,2.6,Northeast,Territory 7,10
+T-004,6002.0,1347.0,54,111.1,39.6,26.59,Family Practice,13,14,2.55,Midwest,Territory 4,11
+T-026,5829.0,1273.0,60,97.2,2.84,30.21,Family Practice,18,9,2.48,Southeast,Territory 26,12
+T-023,5443.0,1201.0,73,74.6,28.37,32.24,Internal Medicine,15,20,2.32,West,Territory 23,13
+T-035,5287.0,1230.0,60,88.1,11.48,22.89,Family Practice,14,10,2.25,Southeast,Territory 35,14
+T-039,5167.0,1165.0,50,103.3,-4.08,24.56,Family Practice,8,8,2.2,Southeast,Territory 39,15
+T-001,5116.0,1106.0,56,91.4,58.15,31.94,Internal Medicine,14,16,2.18,Midwest,Territory 1,16
+T-017,4347.0,990.0,63,69.0,22.76,29.67,Internal Medicine,20,17,1.85,West,Territory 17,17
+T-022,4292.0,943.0,51,84.2,14.03,27.91,Internal Medicine,13,10,1.83,Midwest,Territory 22,18
+T-003,4290.0,920.0,49,87.6,16.96,23.22,Family Practice,15,11,1.82,Northeast,Territory 3,19
+T-015,4160.0,913.0,54,77.0,4.14,28.79,Internal Medicine,12,12,1.77,Northeast,Territory 15,20
+T-006,4062.0,948.0,52,78.1,1.68,32.18,Family Practice,10,15,1.73,Midwest,Territory 6,21
+T-016,3490.0,805.0,34,102.6,3.88,30.22,Family Practice,10,5,1.48,West,Territory 16,22
+T-012,3404.0,780.0,48,70.9,34.04,27.89,Internal Medicine,10,15,1.45,Southeast,Territory 12,23
+T-005,3379.0,703.0,56,60.3,22.74,27.32,Family Practice,15,15,1.44,Midwest,Territory 5,24
+T-031,3210.0,735.0,50,64.2,27.01,26.47,Family Practice,10,13,1.37,Southeast,Territory 31,25
+T-009,3126.0,690.0,55,56.8,22.5,25.75,Internal Medicine,10,10,1.33,Midwest,Territory 9,26
+T-040,3073.0,715.0,57,53.9,3.89,27.5,Internal Medicine,12,7,1.31,Southeast,Territory 40,27
+T-033,3048.0,724.0,52,58.6,42.27,24.12,Internal Medicine,9,11,1.3,West,Territory 33,28
+T-037,3041.0,677.0,57,53.4,23.8,26.67,Family Practice,17,9,1.29,Northeast,Territory 37,29
+T-028,3008.0,692.0,56,53.7,23.13,29.08,Family Practice,12,11,1.28,West,Territory 28,30
+T-027,2740.0,635.0,45,60.9,19.15,30.44,Cardiology,3,13,1.17,Southeast,Territory 27,31
+T-030,2738.0,600.0,52,52.7,7.37,30.35,Cardiology,12,11,1.16,Midwest,Territory 30,32
+T-011,2701.0,666.0,46,58.7,39.67,27.82,Family Practice,12,14,1.15,West,Territory 11,33
+T-038,2439.0,498.0,56,43.6,8.78,27.54,Internal Medicine,11,13,1.04,Southeast,Territory 38,34
+T-018,2407.0,536.0,55,43.8,27.43,29.98,Cardiology,10,18,1.02,West,Territory 18,35
+T-025,2354.0,496.0,47,50.1,11.18,34.39,Internal Medicine,12,8,1.0,Southeast,Territory 25,36
+T-014,2293.0,536.0,42,54.6,15.6,27.46,Cardiology,16,6,0.98,Southeast,Territory 14,37
+T-024,2264.0,512.0,57,39.7,11.88,26.87,Family Practice,7,16,0.96,West,Territory 24,38
+T-036,2260.0,505.0,62,36.5,15.69,25.48,Internal Medicine,12,13,0.96,West,Territory 36,39
+T-010,2024.0,469.0,54,37.5,63.52,33.29,Family Practice,10,17,0.86,Northeast,Territory 10,40
