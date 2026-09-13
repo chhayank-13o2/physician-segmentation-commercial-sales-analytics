@@ -1,0 +1,193 @@
+{
+  "name": "PhysicianSalesAnalytics",
+  "compatibilityLevel": 1567,
+  "model": {
+    "culture": "en-US",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "en-US",
+    "tables": [
+      {
+        "name": "fact_prescriptions",
+        "columns": [
+          { "name": "rx_id", "dataType": "string", "sourceColumn": "rx_id" },
+          { "name": "physician_id", "dataType": "string", "sourceColumn": "physician_id" },
+          { "name": "product_id", "dataType": "string", "sourceColumn": "product_id" },
+          { "name": "rx_date", "dataType": "dateTime", "sourceColumn": "rx_date", "formatString": "yyyy-mm-dd" },
+          { "name": "trx_quantity", "dataType": "int64", "sourceColumn": "trx_quantity" },
+          { "name": "nrx_quantity", "dataType": "int64", "sourceColumn": "nrx_quantity" },
+          { "name": "rx_type", "dataType": "string", "sourceColumn": "rx_type" },
+          { "name": "payer_type", "dataType": "string", "sourceColumn": "payer_type" }
+        ],
+        "measures": [
+          {
+            "name": "Total TRx",
+            "expression": "SUM('fact_prescriptions'[trx_quantity])",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Total NRx",
+            "expression": "SUM('fact_prescriptions'[nrx_quantity])",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "New Patient Share %",
+            "expression": "DIVIDE([Total NRx], [Total TRx], 0)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Brand TRx",
+            "expression": "CALCULATE([Total TRx], 'dim_product'[product_type] = \"Brand\")",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Generic TRx",
+            "expression": "CALCULATE([Total TRx], 'dim_product'[product_type] = \"Generic\")",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Brand Share %",
+            "expression": "DIVIDE([Brand TRx], [Total TRx], 0)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Same Period Last Year TRx",
+            "expression": "CALCULATE([Total TRx], SAMEPERIODLASTYEAR('fact_prescriptions'[rx_date]))",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "YoY TRx Growth %",
+            "expression": "VAR CurrentTRx = [Total TRx] VAR PriorTRx = [Same Period Last Year TRx] RETURN DIVIDE(CurrentTRx - PriorTRx, PriorTRx, 0)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Active Prescribers Count",
+            "expression": "DISTINCTCOUNT('fact_prescriptions'[physician_id])",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Avg TRx per Prescriber",
+            "expression": "DIVIDE([Total TRx], [Active Prescribers Count], 0)",
+            "formatString": "#,##0.0"
+          }
+        ]
+      },
+      {
+        "name": "dim_physician",
+        "columns": [
+          { "name": "physician_id", "dataType": "string", "sourceColumn": "physician_id" },
+          { "name": "npi", "dataType": "string", "sourceColumn": "npi" },
+          { "name": "first_name", "dataType": "string", "sourceColumn": "first_name" },
+          { "name": "last_name", "dataType": "string", "sourceColumn": "last_name" },
+          { "name": "specialty", "dataType": "string", "sourceColumn": "specialty" },
+          { "name": "territory_id", "dataType": "string", "sourceColumn": "territory_id" },
+          { "name": "city", "dataType": "string", "sourceColumn": "city" },
+          { "name": "state", "dataType": "string", "sourceColumn": "state" },
+          { "name": "years_in_practice", "dataType": "int64", "sourceColumn": "years_in_practice" }
+        ],
+        "measures": [
+          {
+            "name": "Total Physicians in Universe",
+            "expression": "COUNTROWS('dim_physician')",
+            "formatString": "#,##0"
+          }
+        ]
+      },
+      {
+        "name": "dim_product",
+        "columns": [
+          { "name": "product_id", "dataType": "string", "sourceColumn": "product_id" },
+          { "name": "product_name", "dataType": "string", "sourceColumn": "product_name" },
+          { "name": "generic_name", "dataType": "string", "sourceColumn": "generic_name" },
+          { "name": "product_type", "dataType": "string", "sourceColumn": "product_type" },
+          { "name": "therapeutic_area", "dataType": "string", "sourceColumn": "therapeutic_area" },
+          { "name": "average_price_per_rx", "dataType": "double", "sourceColumn": "average_price_per_rx", "formatString": "$#,##0.00" }
+        ]
+      },
+      {
+        "name": "dim_territory",
+        "columns": [
+          { "name": "territory_id", "dataType": "string", "sourceColumn": "territory_id" },
+          { "name": "territory_name", "dataType": "string", "sourceColumn": "territory_name" },
+          { "name": "region", "dataType": "string", "sourceColumn": "region" },
+          { "name": "district", "dataType": "string", "sourceColumn": "district" }
+        ]
+      },
+      {
+        "name": "physician_segments",
+        "columns": [
+          { "name": "physician_id", "dataType": "string", "sourceColumn": "physician_id" },
+          { "name": "total_trx_2024", "dataType": "double", "sourceColumn": "total_trx_2024" },
+          { "name": "yoy_growth_pct", "dataType": "double", "sourceColumn": "yoy_growth_pct" },
+          { "name": "brand_share_pct", "dataType": "double", "sourceColumn": "brand_share_pct" },
+          { "name": "volume_decile", "dataType": "int64", "sourceColumn": "volume_decile" },
+          { "name": "growth_decile", "dataType": "int64", "sourceColumn": "growth_decile" },
+          { "name": "brand_decile", "dataType": "int64", "sourceColumn": "brand_decile" },
+          { "name": "composite_score", "dataType": "double", "sourceColumn": "composite_score" },
+          { "name": "tier", "dataType": "string", "sourceColumn": "tier" },
+          { "name": "priority_bucket", "dataType": "string", "sourceColumn": "priority_bucket" }
+        ],
+        "measures": [
+          {
+            "name": "Priority A Physicians",
+            "expression": "CALCULATE(COUNTROWS('physician_segments'), 'physician_segments'[priority_bucket] = \"A (Protect - Weekly)\")",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Priority B Physicians",
+            "expression": "CALCULATE(COUNTROWS('physician_segments'), 'physician_segments'[priority_bucket] = \"B (Grow - Bi-weekly)\")",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Priority C Physicians",
+            "expression": "CALCULATE(COUNTROWS('physician_segments'), 'physician_segments'[priority_bucket] = \"C (Retain - Monthly)\")",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Priority D Physicians",
+            "expression": "CALCULATE(COUNTROWS('physician_segments'), 'physician_segments'[priority_bucket] = \"D (Monitor - Quarterly)\")",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Platinum Tier Prescribers",
+            "expression": "CALCULATE(COUNTROWS('physician_segments'), 'physician_segments'[tier] = \"Platinum\")",
+            "formatString": "#,##0"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "rel_physician_prescriptions",
+        "fromTable": "fact_prescriptions",
+        "fromColumn": "physician_id",
+        "toTable": "dim_physician",
+        "toColumn": "physician_id"
+      },
+      {
+        "name": "rel_product_prescriptions",
+        "fromTable": "fact_prescriptions",
+        "fromColumn": "product_id",
+        "toTable": "dim_product",
+        "toColumn": "product_id"
+      },
+      {
+        "name": "rel_territory_physician",
+        "fromTable": "dim_physician",
+        "fromColumn": "territory_id",
+        "toTable": "dim_territory",
+        "toColumn": "territory_id"
+      },
+      {
+        "name": "rel_physician_segments",
+        "fromTable": "physician_segments",
+        "fromColumn": "physician_id",
+        "toTable": "dim_physician",
+        "toColumn": "physician_id"
+      }
+    ]
+  }
+}

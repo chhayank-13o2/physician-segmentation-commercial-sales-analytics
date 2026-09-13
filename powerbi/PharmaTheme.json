@@ -1,0 +1,36 @@
+{
+  "name": "PharmaCommercialAnalytics",
+  "dataColors": [
+    "#1B365D",
+    "#008080",
+    "#E74C3C",
+    "#F39C12",
+    "#3498DB",
+    "#2ECC71",
+    "#9B59B6",
+    "#34495E"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#2C3E50",
+  "tableAccent": "#1B365D",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "*": {
+          "fontFamily": "Segoe UI",
+          "color": { "solid": { "color": "#2C3E50" } }
+        }
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": { "solid": { "color": "#F8F9FA" } },
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}

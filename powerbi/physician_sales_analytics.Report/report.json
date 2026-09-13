@@ -1,0 +1,38 @@
+{
+  "config": "{\"version\":\"5.53\",\"themeCollection\":{\"baseTheme\":{\"name\":\"PharmaCommercialAnalytics\",\"version\":\"1.0\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true}",
+  "layoutOptimization": 0,
+  "sections": [
+    {
+      "name": "ReportSection_ExecSummary",
+      "displayName": "Executive Summary",
+      "filters": "[]",
+      "height": 720,
+      "width": 1280,
+      "ordinal": 0
+    },
+    {
+      "name": "ReportSection_Segmentation",
+      "displayName": "Physician Decile Segmentation",
+      "filters": "[]",
+      "height": 720,
+      "width": 1280,
+      "ordinal": 1
+    },
+    {
+      "name": "ReportSection_Territory",
+      "displayName": "Territory Sales Performance",
+      "filters": "[]",
+      "height": 720,
+      "width": 1280,
+      "ordinal": 2
+    },
+    {
+      "name": "ReportSection_PriorityMatrix",
+      "displayName": "Call Priority Matrix",
+      "filters": "[]",
+      "height": 720,
+      "width": 1280,
+      "ordinal": 3
+    }
+  ]
+}

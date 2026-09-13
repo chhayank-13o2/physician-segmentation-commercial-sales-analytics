@@ -1,236 +1,127 @@
 # Power BI Data Model & DAX Guide
 
-## Data Model
+## 1. Data Model Architecture
 
-The Power BI implementation uses a classic Star Schema design, optimizing for performance and ease of querying.
-
-### Star Schema Diagram
+The Power BI model follows a Kimball Dimensional Star Schema centered on the `fact_prescriptions` table and integrated directly with the decile segmentation output (`physician_segments`).
 
 ```mermaid
 erDiagram
-    fact_prescriptions {
-        BIGINT prescription_id
-        DATE date_id
-        INT physician_id
-        INT product_id
-        INT trx_count
-        INT nrx_count
-        DECIMAL revenue
-    }
-    
-    dim_physician {
-        INT physician_id
-        VARCHAR npi_number
-        VARCHAR specialty
-        INT territory_id
-    }
-    
-    dim_product {
-        INT product_id
-        BOOLEAN is_brand
-    }
-    
-    dim_date {
-        DATE date_id
-    }
-    
-    dim_territory {
-        INT territory_id
-    }
-    
-    physician_segmentation {
-        INT physician_id
-        VARCHAR tier
-        VARCHAR call_priority
-    }
-
-    dim_physician ||--o{ fact_prescriptions : "1:Many"
-    dim_product ||--o{ fact_prescriptions : "1:Many"
-    dim_date ||--o{ fact_prescriptions : "1:Many"
-    dim_territory ||--o{ dim_physician : "1:Many"
-    dim_physician ||--|| physician_segmentation : "1:1"
+    dim_physician ||--o{ fact_prescriptions : writes
+    dim_product ||--o{ fact_prescriptions : prescribed
+    dim_territory ||--o{ dim_physician : covers
+    dim_territory ||--|| dim_sales_rep : managed_by
+    physician_segments ||--|| dim_physician : extends
 ```
 
-### Relationship Definitions
-- `dim_physician[physician_id]` -> `fact_prescriptions[physician_id]` (1:Many, Single direction)
-- `dim_product[product_id]` -> `fact_prescriptions[product_id]` (1:Many, Single direction)
-- `dim_date[date_id]` -> `fact_prescriptions[date_id]` (1:Many, Single direction)
-- `dim_territory[territory_id]` -> `dim_physician[territory_id]` (1:Many, Single direction)
-- `dim_physician[physician_id]` -> `physician_segmentation[physician_id]` (1:1, Both directions)
+### Table Relationships
+- `fact_prescriptions[physician_id]` ➔ `dim_physician[physician_id]` (Many-to-One, Single Filter)
+- `fact_prescriptions[product_id]` ➔ `dim_product[product_id]` (Many-to-One, Single Filter)
+- `dim_physician[territory_id]` ➔ `dim_territory[territory_id]` (Many-to-One, Single Filter)
+- `physician_segments[physician_id]` ➔ `dim_physician[physician_id]` (One-to-One, Bi-directional)
 
-### Data Source
-All tables are sourced from CSV files located in the `data/processed/` directory.
+### Data Source Paths
+All source tables are located in the `data/raw/` directory:
+- `prescriptions.csv` ➔ `fact_prescriptions`
+- `physicians.csv` ➔ `dim_physician`
+- `products.csv` ➔ `dim_product`
+- `territories.csv` ➔ `dim_territory`
+- `sales_reps.csv` ➔ `dim_sales_rep`
+- `physician_segments.csv` ➔ `physician_segments`
 
 ---
 
-## DAX Measures
+## 2. Production DAX Measures
 
-Below are the core DAX measures required for the dashboard.
-
-### Volume & Revenue
+### Prescription Volume & Patient Counts
 ```dax
-Total TRx = SUM('fact_prescriptions'[trx_count])
+Total TRx = SUM('fact_prescriptions'[trx_quantity])
 
-Total NRx = SUM('fact_prescriptions'[nrx_count])
+Total NRx = SUM('fact_prescriptions'[nrx_quantity])
 
-Total Revenue = SUM('fact_prescriptions'[revenue])
+New Patient Share % = 
+DIVIDE([Total NRx], [Total TRx], 0)
 
-Avg TRx per Physician = 
-DIVIDE(
-    [Total TRx],
-    DISTINCTCOUNT('fact_prescriptions'[physician_id])
-)
+Active Prescribers Count = 
+DISTINCTCOUNT('fact_prescriptions'[physician_id])
+
+Avg TRx per Prescriber = 
+DIVIDE([Total TRx], [Active Prescribers Count], 0)
 ```
 
-### Growth & Time Intelligence
+### Brand vs. Generic Dynamics
+```dax
+Brand TRx = 
+CALCULATE([Total TRx], 'dim_product'[product_type] = "Brand")
+
+Generic TRx = 
+CALCULATE([Total TRx], 'dim_product'[product_type] = "Generic")
+
+Brand Share % = 
+DIVIDE([Brand TRx], [Total TRx], 0)
+```
+
+### Time Intelligence & Growth
 ```dax
 Same Period Last Year TRx = 
 CALCULATE(
-    [Total TRx],
-    SAMEPERIODLASTYEAR('dim_date'[date_id])
+    [Total TRx], 
+    SAMEPERIODLASTYEAR('fact_prescriptions'[rx_date])
 )
 
-YoY Growth % = 
-DIVIDE(
-    [Total TRx] - [Same Period Last Year TRx],
-    [Same Period Last Year TRx]
-)
+YoY TRx Growth % = 
+VAR CurrentTRx = [Total TRx]
+VAR PriorTRx = [Same Period Last Year TRx]
+RETURN
+DIVIDE(CurrentTRx - PriorTRx, PriorTRx, 0)
 
-Previous Quarter TRx = 
-CALCULATE(
-    [Total TRx],
-    PREVIOUSQUARTER('dim_date'[date_id])
-)
-
-QoQ Growth % = 
-DIVIDE(
-    [Total TRx] - [Previous Quarter TRx],
-    [Previous Quarter TRx]
-)
-
-Running Total TRx = 
-CALCULATE(
-    [Total TRx],
-    DATESYTD('dim_date'[date_id])
-)
+Quarterly TRx = 
+TOTALQTD([Total TRx], 'fact_prescriptions'[rx_date])
 ```
 
-### Market & Brand Share
+### Commercial Target & Priority Allocations
 ```dax
-Brand TRx = 
+Priority A Physicians = 
 CALCULATE(
-    [Total TRx],
-    'dim_product'[is_brand] = TRUE()
+    COUNTROWS('physician_segments'), 
+    'physician_segments'[priority_bucket] = "A (Protect - Weekly)"
 )
 
-Brand Share % = 
-DIVIDE(
-    [Brand TRx],
-    [Total TRx]
-)
-
-Generic Share % = 
-1 - [Brand Share %]
-
-Market Share by Territory = 
-DIVIDE(
-    [Total TRx],
-    CALCULATE([Total TRx], ALL('dim_territory'))
-)
-
-New Patient Share = 
-DIVIDE(
-    [Total NRx],
-    [Total TRx]
-)
-```
-
-### Segmentation & Targeting
-```dax
-Physician Count by Tier = 
+Priority B Physicians = 
 CALCULATE(
-    COUNTROWS('dim_physician'),
-    CROSSFILTER('dim_physician'[physician_id], 'physician_segmentation'[physician_id], Both)
+    COUNTROWS('physician_segments'), 
+    'physician_segments'[priority_bucket] = "B (Grow - Bi-weekly)"
 )
 
-Priority A Count = 
+Priority C Physicians = 
 CALCULATE(
-    COUNTROWS('physician_segmentation'),
-    'physician_segmentation'[call_priority] = "A"
+    COUNTROWS('physician_segments'), 
+    'physician_segments'[priority_bucket] = "C (Retain - Monthly)"
 )
 
-Priority B Count = 
+Priority D Physicians = 
 CALCULATE(
-    COUNTROWS('physician_segmentation'),
-    'physician_segmentation'[call_priority] = "B"
+    COUNTROWS('physician_segments'), 
+    'physician_segments'[priority_bucket] = "D (Monitor - Quarterly)"
 )
 
-Priority C Count = 
+Platinum Tier Prescribers = 
 CALCULATE(
-    COUNTROWS('physician_segmentation'),
-    'physician_segmentation'[call_priority] = "C"
+    COUNTROWS('physician_segments'), 
+    'physician_segments'[tier] = "Platinum"
 )
 
-Priority D Count = 
-CALCULATE(
-    COUNTROWS('physician_segmentation'),
-    'physician_segmentation'[call_priority] = "D"
-)
-
-Growth vs Target = 
-VAR Target = 0.05
-RETURN [YoY Growth %] - Target
+Target Gap to Budget (5% Growth) = 
+VAR TargetTRx = [Same Period Last Year TRx] * 1.05
+RETURN
+[Total TRx] - TargetTRx
 ```
 
 ---
 
-## Dashboard Pages
+## 3. Power BI Project Format (.pbip)
 
-### Page 1: Executive Summary
-- **Visuals**: KPI Cards (Total TRx, Total Revenue, YoY Growth %, Brand Share %), Line Chart (TRx Trend over time), Filled Map (Territory Performance by Revenue).
-- **Purpose**: High-level overview for leadership to gauge overall business health.
-
-### Page 2: Physician Segmentation
-- **Visuals**: Bar Chart (TRx by Volume Decile), Donut Chart (Physician Count by Tier), Matrix Table (Tier vs Average TRx).
-- **Purpose**: Analyze the distribution and value of physician tiers. Includes drill-through to individual physician details.
-
-### Page 3: Territory Performance
-- **Visuals**: Clustered Bar Chart (TRx and NRx by Territory), Scorecard (YoY Growth vs Target by Region), Table (Sales Rep Comparison).
-- **Purpose**: Allow district and regional managers to track performance across geographies and reps.
-
-### Page 4: Call Priority Matrix
-- **Visuals**: Scatter Chart / Quadrant Chart (Volume vs Brand Share, colored by Priority A/B/C/D), Data Table (Call List with Physician Names, Tiers, and Contact Info).
-- **Purpose**: Actionable tool for Sales Reps to plan their routing and prioritize high-value targets. Includes slicers for Territory and Specialty.
-
----
-
-## Color Theme
-
-Save this as `PharmaTheme.json` and import it into Power BI to ensure consistent branding.
-
-```json
-{
-    "name": "Pharma Analytics Theme",
-    "dataColors": [
-        "#004B87", 
-        "#00A3E0", 
-        "#87B940", 
-        "#FDB813", 
-        "#E87722", 
-        "#63666A", 
-        "#A6A6A6", 
-        "#D0D0D0"
-    ],
-    "background": "#FFFFFF",
-    "foreground": "#333333",
-    "tableAccent": "#004B87",
-    "visualStyles": {
-        "*": {
-            "*": {
-                "fontFamily": [{ "value": "Segoe UI" }],
-                "color": [{ "value": "#333333" }]
-            }
-        }
-    }
-}
-```
+This directory includes a native **Power BI Project (`physician_sales_analytics.pbip`)** compatible with modern Power BI Desktop:
+- `physician_sales_analytics.pbip`: Main project file. Double-click to launch Power BI Desktop.
+- `physician_sales_analytics.Dataset/model.bim`: Pre-defined Tabular Model schema, tables, relationships, and all DAX formulas.
+- `physician_sales_analytics.Report/report.json`: Multi-page report definition.
+- `PharmaTheme.json`: Pre-configured corporate branding theme (Navy, Teal, Slate).
